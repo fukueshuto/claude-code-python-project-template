@@ -1,0 +1,126 @@
+# syntax=docker/dockerfile:1
+
+# Development Dockerfile with comprehensive tooling
+# Based on VS Code devcontainer specification for Python development
+
+ARG BASE_IMAGE="mcr.microsoft.com/devcontainers/base:ubuntu"
+
+FROM $BASE_IMAGE
+
+# Set environment variables (equivalent to .devcontainer)
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_CACHE_DIR=/workspaces/claude-code-python-project-template/.cache/uv \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/home/vscode/.venv \
+    UV_COMPILE_BYTECODE=1 \
+    DISPLAY="" \
+    NODE_VERSION=20
+
+# Set working directory to match VS Code devcontainer expectations
+WORKDIR /workspaces/claude-code-python-project-template
+
+# Use vscode user (already exists in base image)
+USER root
+
+# Update package repository and install system packages
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+    # Basic development tools
+    curl \
+    wget \
+    git \
+    jq \
+    ca-certificates \
+    build-essential \
+    ripgrep \
+    # Additional useful tools
+    zip \
+    unzip \
+    tree \
+    htop \
+    vim \
+    nano \
+    software-properties-common \
+    apt-transport-https \
+    gnupg \
+    lsb-release
+
+# Install GitHub CLI
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y gh
+
+# Install Node.js using NodeSource repository (LTS version)
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
+    && apt-get install -y nodejs
+
+# Install uv (Python package manager)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Install Claude Code CLI via npm
+RUN npm install -g claude-code-cli
+
+# Set up common development utilities (similar to devcontainer common-utils feature)
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get install -y \
+    zsh \
+    fish \
+    bash-completion \
+    && chsh -s /bin/zsh vscode
+
+# Install Oh My Zsh for vscode user
+USER vscode
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
+
+# Create necessary directories with proper permissions
+USER root
+RUN mkdir -p /workspaces/claude-code-python-project-template \
+    && chown -R vscode:vscode /workspaces/claude-code-python-project-template \
+    && mkdir -p /home/vscode/.claude \
+    && chown -R vscode:vscode /home/vscode/.claude \
+    && mkdir -p /workspaces/claude-code-python-project-template/.cache/uv \
+    && chown -R vscode:vscode /workspaces/claude-code-python-project-template/.cache \
+    && mkdir -p /home/vscode/.venv \
+    && chown -R vscode:vscode /home/vscode/.venv
+
+# Switch back to vscode user for development
+USER vscode
+
+# Verify installations and create health check script
+RUN echo '#!/bin/bash\n\
+echo "=== Development Tools Health Check ==="\n\
+echo "Python: $(python3 --version 2>/dev/null || echo "Not found")"\n\
+echo "uv: $(uv --version 2>/dev/null || echo "Not found")"\n\
+echo "Node.js: $(node --version 2>/dev/null || echo "Not found")"\n\
+echo "npm: $(npm --version 2>/dev/null || echo "Not found")"\n\
+echo "GitHub CLI: $(gh --version 2>/dev/null | head -1 || echo "Not found")"\n\
+echo "Claude Code CLI: $(claude-code --version 2>/dev/null || echo "Not found")"\n\
+echo "Git: $(git --version 2>/dev/null || echo "Not found")"\n\
+echo "ripgrep: $(rg --version 2>/dev/null | head -1 || echo "Not found")"\n\
+echo "jq: $(jq --version 2>/dev/null || echo "Not found")"\n\
+echo "================================"\n\
+' > /tmp/health-check.sh && chmod +x /tmp/health-check.sh
+
+# Set up shell environment
+RUN echo 'export PATH="/home/vscode/.local/bin:$PATH"' >> /home/vscode/.bashrc \
+    && echo 'export PATH="/home/vscode/.local/bin:$PATH"' >> /home/vscode/.zshrc
+
+# Copy and set up initialization script
+COPY docker/init.sh /usr/local/bin/init.sh
+RUN chmod +x /usr/local/bin/init.sh
+
+# Set up entrypoint to run initialization script
+ENTRYPOINT ["/usr/local/bin/init.sh"]
+CMD ["/bin/zsh"]

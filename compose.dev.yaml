@@ -1,0 +1,63 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+      cache_from:
+        - mcr.microsoft.com/devcontainers/base:ubuntu
+    container_name: claude-code-python-dev
+    user: vscode
+    working_dir: /workspaces/claude-code-python-project-template
+    
+    # Development mode bind mounts for live code editing
+    volumes:
+      - .:/workspaces/claude-code-python-project-template:cached
+      - claude-code-config:/home/vscode/.claude
+      - uv-cache:/workspaces/claude-code-python-project-template/.cache/uv
+      
+    environment:
+      # Development environment variables (.devcontainer equivalent)
+      - DEV_MODE=true
+      - DISPLAY=${DISPLAY:-}
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - UV_CACHE_DIR=/workspaces/claude-code-python-project-template/.cache/uv
+      - UV_LINK_MODE=copy
+      - UV_PROJECT_ENVIRONMENT=/home/vscode/.venv
+      - UV_COMPILE_BYTECODE=1
+      
+    # Development ports - expose common development ports
+    ports:
+      - "8000:8000"  # Common development server port
+      - "8080:8080"  # Alternative development server port
+      - "3000:3000"  # Node.js development server port
+      
+    # Enable TTY and stdin for interactive development
+    tty: true
+    stdin_open: true
+    
+    # Development command - run initialization script and start shell
+    command: >
+      bash -c "
+        # Run development environment setup
+        /workspaces/claude-code-python-project-template/docker/init.sh &&
+        # Start interactive shell
+        exec zsh
+      "
+    
+    # Restart policy for development
+    restart: unless-stopped
+    
+    # Health check for development container
+    healthcheck:
+      test: ["CMD", "/tmp/health-check.sh"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  claude-code-config:
+    driver: local
+  uv-cache:
+    driver: local

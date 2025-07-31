@@ -1,0 +1,177 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(**)",
+      "Read(**)",
+      "Write(**)",
+      "Edit(**)",
+      "MultiEdit(**)",
+      "WebFetch(**)",
+      "WebSearch(**)"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(rm:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rmdir:*)",
+      "Bash(dd:*)",
+      "Bash(mkfs:*)",
+      "Bash(fdisk:*)",
+      "Bash(mount:*)",
+      "Bash(umount:*)",
+      "Bash(systemctl:*)",
+      "Bash(service:*)",
+      "Bash(shutdown:*)",
+      "Bash(reboot:*)",
+      "Bash(halt:*)",
+      "Bash(init:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git branch -D:*)",
+      "Bash(git tag -d:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(nc:*)",
+      "Bash(netcat:*)",
+      "Bash(telnet:*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(rsync:*)",
+      "Bash(ftp:*)",
+      "Bash(sftp:*)",
+      "Bash(npm uninstall -g:*)",
+      "Bash(npm remove -g:*)",
+      "Bash(yarn global remove:*)",
+      "Bash(pip uninstall:*)",
+      "Bash(apt remove:*)",
+      "Bash(apt purge:*)",
+      "Bash(yum remove:*)",
+      "Bash(dnf remove:*)",
+      "Bash(brew uninstall:*)",
+      "Bash(psql:*production*)",
+      "Bash(mysql:*production*)",
+      "Bash(mongod:*)",
+      "Bash(redis-cli:*production*)",
+      "Read(.env*)",
+      "Read(**/.env*)",
+      "Read(*.env)",
+      "Read(id_rsa)",
+      "Read(id_ed25519)",
+      "Read(**/*_rsa)",
+      "Read(**/*_ed25519)",
+      "Read(**/.ssh/**)",
+      "Read(**/*token*)",
+      "Read(**/*key*)",
+      "Read(**/*secret*)",
+      "Read(**/*password*)",
+      "Read(**/*credential*)",
+      "Read(**/*auth*)",
+      "Read(**/secrets/**)",
+      "Read(**/.aws/credentials)",
+      "Read(**/.aws/config)",
+      "Read(**/.gcp/**)",
+      "Read(**/.azure/**)",
+      "Write(.env*)",
+      "Write(**/.env*)",
+      "Write(*.env)",
+      "Write(**/secrets/**)",
+      "Write(**/.ssh/**)",
+      "Write(**/*token*)",
+      "Write(**/*key*)",
+      "Write(**/*secret*)",
+      "Write(**/*password*)",
+      "Write(**/*credential*)",
+      "Write(**/.aws/credentials)",
+      "Write(**/.aws/config)",
+      "Write(**/.gcp/**)",
+      "Write(**/.azure/**)",
+      "Edit(.env*)",
+      "Edit(**/.env*)",
+      "Edit(*.env)",
+      "Edit(**/secrets/**)",
+      "Edit(**/.ssh/**)",
+      "Edit(**/*token*)",
+      "Edit(**/*key*)",
+      "Edit(**/*secret*)",
+      "Edit(**/*password*)",
+      "Edit(**/*credential*)",
+      "MultiEdit(.env*)",
+      "MultiEdit(**/.env*)",
+      "MultiEdit(*.env)",
+      "MultiEdit(**/secrets/**)",
+      "Bash(kill -9:*)",
+      "Bash(killall:*)",
+      "Bash(pkill:*)",
+      "Bash(crontab:*)",
+      "Bash(chmod 777:*)",
+      "Bash(chmod -R 777:*)",
+      "Bash(chown:*)",
+      "Bash(chgrp:*)",
+      "Bash(history -c:*)",
+      "Write(**/.*_history)",
+      "Write(**/.bash_history)",
+      "Write(**/.zsh_history)",
+      "Edit(**/.*_history)",
+      "Edit(**/.bash_history)",
+      "Edit(**/.zsh_history)",
+      "Bash(export PATH=*)",
+      "Bash(unset PATH:*)",
+      "Bash(eval:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r 'if .tool_input.command | test(\"rm -rf|dd if=|:(){ :|:& };:\") then {\"decision\": \"block\", \"reason\": \"危険なコマンドは実行できません。別の方法を検討してください。\"} else empty end'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/enforce-uv.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[$(date)] $USER: $(jq -r '.tool_input.command')\" >> ~/.claude/command_history.log"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path | select(endswith(\".py\"))' | xargs -r ruff format"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code: $(jq -r '.message')\" | terminal-notifier -title 'Claude Code'"
+          }
+        ]
+      }
+    ]
+  }
+}

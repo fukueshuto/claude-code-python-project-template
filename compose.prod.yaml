@@ -1,0 +1,61 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.prod
+      target: production
+      cache_from:
+        - mcr.microsoft.com/devcontainers/base:ubuntu
+        - ubuntu:24.04
+    container_name: claude-code-python-prod
+    user: vscode
+    working_dir: /workspaces/claude-code-python-project-template
+    
+    # Production environment variables (.devcontainer based with production optimizations)
+    environment:
+      - DEV_MODE=false
+      - DISPLAY=${DISPLAY:-}
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONOPTIMIZE=1
+      - UV_CACHE_DIR=/opt/.cache/uv
+      - UV_LINK_MODE=copy
+      - UV_PROJECT_ENVIRONMENT=/opt/venv
+      - UV_COMPILE_BYTECODE=1
+      
+    # Production ports - only expose necessary ports
+    ports:
+      - "8000:8000"
+      
+    # Production restart policy
+    restart: unless-stopped
+    
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    
+    # Production health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; print('Health: OK'); sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Security settings
+    security_opt:
+      - no-new-privileges:true
+    read_only: false  # Set to true if your app doesn't need write access
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
