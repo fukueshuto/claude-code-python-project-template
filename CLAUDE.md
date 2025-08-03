@@ -53,15 +53,15 @@ This approach combines manual specification creation with autonomous task execut
    - Document in `.tmp/design.md`
    - Get user approval
 
-3. **Task Breakdown** (`/tasks`)
+3. **Task Breakdown** (`/plan`)
    - Break down into implementable units
-   - Document in `.tmp/tasks.md`
+   - Document in `.tmp/plan.md`
    - Prepare for autonomous execution
 
 #### Phase 2: Autonomous Execution (Sub agents)
 1. **Task Decomposition** (task-decomposer agent)
    - Convert plans to executable task files
-   - Create in `docs/plans/tasks/`
+   - Create in `.dev_docs/tasks/`
    - Include overview and context
 
 2. **Task Execution** (task-executor agent)
@@ -78,7 +78,9 @@ This approach combines manual specification creation with autonomous task execut
 - `/spec` - Start complete workflow
 - `/requirements` - Stage 1 only
 - `/design` - Stage 2 only
-- `/tasks` - Stage 3 only
+- `/plan` - Stage 3 only
+- `/decompose-task` - Decompose task from plan
+- `/sync-todos` - Syncronize between todo list and tasks
 - `/implement` - Start autonomous execution
 
 ### Sub Agent Usage

@@ -58,9 +58,9 @@ project/
 ├── tests/
 │   ├── conftest.py
 │   └── test_*.py
-├── docs/
+├── .dev_docs/
 │   ├── specs/
-│   └── plans/
+│   └── tasks/
 ├── .claude/
 ├── pyproject.toml
 ├── README.md

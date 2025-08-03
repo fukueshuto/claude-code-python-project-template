@@ -6,39 +6,30 @@ echo "🚀 Initializing development container..."
 
 # Update system packages
 echo "📦 Updating system packages..."
-sudo apt-get update && sudo apt-get upgrade -y
+# sudo apt-get update && sudo apt-get upgrade -y
 
 # Install additional security and development tools
-echo "🔧 Installing additional tools..."
-sudo apt-get install -y \
-    iptables \
-    ipset \
-    fail2ban \
-    ufw \
-    htop \
-    tree \
-    vim \
-    tmux \
-    zsh-autosuggestions \
-    zsh-syntax-highlighting
+# echo "🔧 Installing additional tools..."
 
 # Setup Python environment
 echo "🐍 Setting up Python environment..."
 uv sync
 
 # Setup pre-commit hooks
-echo "🔍 Setting up pre-commit hooks..."
-if [ -f "pyproject.toml" ] || [ -f ".pre-commit-config.yaml" ]; then
-    uv run pre-commit install
-fi
+# echo "🔍 Setting up pre-commit hooks..."
+# if [ -f "pyproject.toml" ] || [ -f ".pre-commit-config.yaml" ]; then
+#     uv run pre-commit install
+# fi
 
 # Setup firewall (requires sudo privileges)
 echo "🛡️ Configuring firewall..."
-if [ -f "init-firewall.sh" ]; then
-    chmod +x init-firewall.sh
-    sudo ./init-firewall.sh
+FIREWALL_SCRIPT=".devcontainer/init-firewall.sh"
+if [ -f "$FIREWALL_SCRIPT" ]; then
+    # ファイルが見つかるので、こちらの処理が実行される
+    chmod +x "$FIREWALL_SCRIPT"
+    sudo "$FIREWALL_SCRIPT"
 else
-    echo "⚠️ WARNING: init-firewall.sh not found, skipping firewall setup"
+    echo "⚠️ WARNING: $FIREWALL_SCRIPT not found, skipping firewall setup"
 fi
 
 # Setup git configuration if not already configured
@@ -52,11 +43,49 @@ if [ -z "$(git config --global user.email 2>/dev/null || true)" ]; then
     echo "   git config --global user.email 'your.email@example.com'"
 fi
 
+# pwdコマンドの実行結果（=現在の絶対パス）を使って、安全なディレクトリとしてGitに登録する
+git config --global --add safe.directory "$(pwd)/*"
+
+# Configure npm global path to avoid permission issues
+# Fix nvm permissions by taking ownership of the nvm directory
+# This allows global npm installs without sudo and is compatible with nvm
+echo "🔧 Taking ownership of nvm directory..."
+sudo chown -R vscode:vscode /usr/local/share/nvm
+# echo "🔧 Configuring npm global path..."
+# NPM_GLOBAL_PATH_EXPORT='export PATH=/home/vscode/.npm-global/bin:$PATH'
+# # Add to .bashrc if it's not already there
+# if [ -f "/home/vscode/.bashrc" ] && ! grep -qF -- "$NPM_GLOBAL_PATH_EXPORT" /home/vscode/.bashrc; then
+#     echo -e "\n# Set path for globally installed npm packages" >> /home/vscode/.bashrc
+#     echo "$NPM_GLOBAL_PATH_EXPORT" >> /home/vscode/.bashrc
+# fi
+# # Add to .zshrc if it's not already there
+# if [ -f "/home/vscode/.zshrc" ] && ! grep -qF -- "$NPM_GLOBAL_PATH_EXPORT" /home/vscode/.zshrc; then
+#     echo -e "\n# Set path for globally installed npm packages" >> /home/vscode/.zshrc
+#     echo "$NPM_GLOBAL_PATH_EXPORT" >> /home/vscode/.zshrc
+# fi
+
 # Setup shell environment
 echo "🐚 Setting up shell environment..."
-# Add useful aliases to .zshrc if it exists
-if [ -f "/home/vscode/.zshrc" ]; then
-    cat >> /home/vscode/.zshrc << 'EOF'
+# Define shell additions (git wrapper and aliases)
+# The git wrapper function is from: https://zenn.dev/cozy_corner/articles/60531a4b25b059
+SHELL_ADDITIONS=$(cat <<'EOF'
+
+# --- Function to prevent `git commit --no-verify` ---
+git() {
+    # Check if the subcommand is 'commit'
+    if [ "$1" = "commit" ]; then
+        # Loop through arguments to find '--no-verify'
+        for arg in "$@"; do
+            if [ "$arg" = "--no-verify" ]; then
+                echo -e "\033[0;31m❌ ERROR: --no-verify bypasses quality checks and is forbidden.\033[0m" >&2
+                echo "Pre-commit hooks ensure code quality. Please fix issues instead of bypassing them." >&2
+                return 1
+            fi
+        done
+    fi
+    # Execute the original git command
+    command git "$@"
+}
 
 # Development aliases
 alias ll='ls -alF'
@@ -86,8 +115,15 @@ alias gd='git diff'
 alias fw-status='sudo iptables -L -n -v'
 alias fw-blocked='sudo ipset list blocked-domains'
 alias fw-allowed='sudo ipset list allowed-inbound'
-
 EOF
+)
+
+# Append the additions to shell config files if they exist
+if [ -f "/home/vscode/.bashrc" ]; then
+    echo -e "\n${SHELL_ADDITIONS}" >> /home/vscode/.bashrc
+fi
+if [ -f "/home/vscode/.zshrc" ]; then
+    echo -e "\n${SHELL_ADDITIONS}" >> /home/vscode/.zshrc
 fi
 
 # Create useful directories
@@ -166,6 +202,18 @@ echo "  ~/workspace/tmp/     - Temporary files"
 echo "  ~/workspace/data/    - Data files"
 echo "  ~/workspace/scripts/ - Utility scripts"
 echo ""
+
+echo "export CLAUDE_CODE_AUTO_UPDATE=0" >> ~/.bashrc
+echo "export CLAUDE_CODE_AUTO_UPDATE=0" >> ~/.zshrc
+echo "export DISABLE_INTERLEAVED_THINKING=1" >> ~/.bashrc
+echo "export DISABLE_INTERLEAVED_THINKING=1" >> ~/.zshrc
+
+# Set up MCP servers
+# Serena
+# uvx --from git+https://github.com/oraios/serena serena start-mcp-server
+# claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
+
+# nohup npx claude-code-templates@latest --analytics > /dev/null 2>&1 &
 
 # Run system info on first setup
 /home/vscode/workspace/scripts/sysinfo.sh

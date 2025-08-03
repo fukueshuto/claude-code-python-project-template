@@ -17,7 +17,7 @@ description: Break down design into implementable tasks (Stage 3 of Spec-Driven 
 Read and understand the design thoroughly to identify all implementation tasks
 
 ### 3. Create Task List Document
-Create `.tmp/tasks.md` with the following structure:
+Create `.tmp/plan.md` with the following structure:
 
 ```markdown
 # タスクリスト - [機能/改善名]
@@ -92,27 +92,7 @@ Create `.tmp/tasks.md` with the following structure:
 - 不明点は実装前に確認する
 ```
 
-### 4. Register tasks in TodoWrite
-Extract main tasks (Phase level or important tasks) and register them using TodoWrite tool with appropriate priorities
-
-### 5. Create implementation guide
-Add a section at the end of tasks.md:
-
-```markdown
-## 実装開始ガイド
-1. このタスクリストに従って順次実装を進めてください
-2. 各タスクの開始時にTodoWriteでin_progressに更新
-3. 完了時はcompletedに更新
-4. 問題発生時は速やかに報告してください
-
-## Sub Agent活用方法
-- `/implement` コマンドで自律実装を開始
-- `task-decomposer` でタスクファイルを生成
-- `task-executor` で個別タスクを実行
-- `quality-checker` で品質保証
-```
-
-### 6. Present to user
+### 4. Present to user
 Show the task breakdown and:
 - Explain the implementation order
 - Highlight any critical paths

@@ -120,7 +120,7 @@ target-version = "py311"
 # 有効にするルール
 select = [
     "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings  
+    "W",   # pycodestyle warnings
     "F",   # pyflakes
     "I",   # isort
     "B",   # flake8-bugbear
@@ -187,7 +187,7 @@ def process(items: list[str]) -> dict[str, Any]:
 # ❌ 問題: 冗長なコード
 if len(items) == 0:
     return None
-    
+
 # ✅ Ruffが提案/自動修正
 if not items:
     return None
@@ -219,13 +219,13 @@ if not items:
 1. `src/utils/data.py:45`
    ```python
    # 型の不一致: str | None を str として使用
-   # 修正案: 
+   # 修正案:
    if value is not None:
        return value.upper()
    ```
 
 2. `src/models/user.py:78`
-   ```python  
+   ```python
    # 戻り値の型が一致しない
    # 修正案: -> list[str] を -> list[str] | None に変更
    ```

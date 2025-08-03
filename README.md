@@ -40,7 +40,7 @@ docker run --rm -it claude-code-python-prod
 ```
 docker/
 ├── Dockerfile.dev      # 開発用Dockerfile
-├── Dockerfile.prod     # 本番用Dockerfile  
+├── Dockerfile.prod     # 本番用Dockerfile
 └── init.sh             # 初期化スクリプト
 
 compose.dev.yaml        # 開発環境Docker Compose設定
@@ -50,7 +50,7 @@ compose.prod.yaml       # 本番環境Docker Compose設定
 
 ### 仕様書・設計書
 ```
-docs/specs/
+.dev_docs/specs/
 ├── requirements.md         # 要件定義書
 ├── design.md              # 詳細設計書
 ├── final-file-structure.md # ファイル構成設計書
@@ -126,9 +126,9 @@ DISPLAY=${DISPLAY:-}
 
 ## 📚 詳細ドキュメント
 
-- [要件定義書](docs/specs/requirements.md) - プロジェクトの目的と要件
-- [詳細設計書](docs/specs/design.md) - アーキテクチャと技術仕様
-- [ファイル構成設計書](docs/specs/final-file-structure.md) - ファイル構成の詳細
+- [要件定義書](.dev_docs/specs/requirements.md) - プロジェクトの目的と要件
+- [詳細設計書](.dev_docs/specs/design.md) - アーキテクチャと技術仕様
+- [ファイル構成設計書](.dev_docs/specs/final-file-structure.md) - ファイル構成の詳細
 
 ## 🛠️ 開発者向け情報
 

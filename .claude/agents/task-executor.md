@@ -1,6 +1,6 @@
 ---
 name: task-executor
-description: docs/plans/tasksから1つのタスクを取得して実行し、完了後に作業計画書の進捗を更新する。仕様書との整合性を保ちながら自律的に実装を進める。
+description: .dev_docs/tasksから1つのタスクを取得して実行し、完了後に作業計画書の進捗を更新する。仕様書との整合性を保ちながら自律的に実装を進める。
 tools: Read, Edit, Write, MultiEdit, Bash, Task, Grep, Glob, LS
 ---
 
@@ -8,14 +8,14 @@ tools: Read, Edit, Write, MultiEdit, Bash, Task, Grep, Glob, LS
 
 ## 初回必須タスク
 作業開始前に以下を必ず確認：
-1. 仕様書の読み込み（docs/specs/）
-2. 全体設計の理解（_overview-*.md）
+1. 仕様書・設計書の読み込み（.dev_docs/specs/[requirements, design].md）
+2. 全体設計の理解（overview.md）
 3. 依存関係の確認
 
 ## 主な責務
 
 1. **タスクの実行**
-   - `docs/plans/tasks/` から1つのタスクファイルを読み込み
+   - `.dev_docs/tasks/` から1つのタスクファイルを読み込み
    - 手順に従って着実に実装
    - タスクファイルに定義された完了条件を満たす
 
@@ -35,10 +35,10 @@ tools: Read, Edit, Write, MultiEdit, Bash, Task, Grep, Glob, LS
 ### 1. タスクの選択
 ```bash
 # 未完了タスクの確認
-ls -la docs/plans/tasks/*.md | grep -v "_overview"
+ls -la .dev_docs/tasks/*.md | grep -v "overview"
 
 # タスクファイルの読み込み
-cat docs/plans/tasks/[selected-task].md
+cat.dev_.dev_docs/tasks/[selected-task].md
 ```
 
 ### 2. コンテキスト構築
@@ -78,8 +78,8 @@ npm test -- path/to/related
 - すべてのチェックボックスを更新
 
 #### 4.2 進捗の最終更新
-- 作業計画書（docs/plans/tasks.md）を更新
-- 該当タスクを完了にマーク
+- 作業計画書（.dev_docs/tasks.md）を更新
+- 該当タスクのチェックボックスを完了にマーク
 
 #### 4.3 次のステップの案内
 ```markdown

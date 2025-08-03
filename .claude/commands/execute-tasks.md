@@ -4,32 +4,14 @@ description: Start autonomous implementation using Sub agents
 ---
 
 ## Context
-- Requirements: @.tmp/requirements.md
-- Design: @.tmp/design.md
-- Tasks: @.tmp/tasks.md
+- Requirements: @.dev_docs/specs/requirements.md
+- Design: @.dev_docs/specs/design.md
 
 ## Your task
 
-### 1. Prepare for autonomous execution
-```bash
-# Create necessary directories
-mkdir -p docs/specs docs/plans/tasks
-
-# Move specifications to permanent location
-cp .tmp/requirements.md docs/specs/
-cp .tmp/design.md docs/specs/
-cp .tmp/tasks.md docs/plans/
-```
-
-### 2. Invoke task decomposer
-Use the task-decomposer Sub agent to:
-- Convert task list into executable task files
-- Create overview document
-- Set up task dependencies
-
-```
-task-decomposerを使って docs/plans/tasks.md をタスクファイルに分解してください
-```
+### 1. Verify prerequisites
+- Check if the TODO list is synchronized with the task files. If not, advise the user to run `/sync-todos` first.
+- Confirm with the user before starting the execution loop.
 
 ### 3. Explain execution loop
 Inform user about the autonomous execution process:
@@ -42,13 +24,14 @@ Inform user about the autonomous execution process:
 1. **task-executor** でタスクを実行
    - 仕様書に基づいた実装
    - 進捗のリアルタイム更新
-   
+
 2. **quality-checker** で品質確認
    - コード品質の自動チェック
    - 問題の即座修正
-   
+
 3. **進捗確認とコミット**
    - タスク完了の確認
+   - すべてのファイルをコミット
    - 次タスクへの移行
 
 必要に応じて **spec-manager** で全体の整合性を確認できます。

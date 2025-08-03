@@ -1,0 +1,25 @@
+{
+    "postCreate": {
+    "copyFiles": [".claude/settings.local.json"]
+  },
+  "squad": {
+    "agents": [
+      {
+        "name": "manager",
+        "prompt": ".claude/roles/manager.md",
+        "worktree": false
+      },
+      {
+        "name": "dev-1",
+        "prompt": ".claude/roles/developer.md",
+        "worktree": true
+      },
+      {
+        "name": "dev-auto",
+        "prompt": ".claude/roles/auto-developer.md",
+        "worktree": true
+      }
+    ],
+    "layout": "auto"
+  }
+}

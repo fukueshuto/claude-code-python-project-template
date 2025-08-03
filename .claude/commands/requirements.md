@@ -8,8 +8,21 @@ description: Create requirements specification for the given task (Stage 1 of Sp
 
 ## Your task
 
-### 1. Create directory
+### 1. Setup & Archive
 - Create `.tmp` directory if it doesn't exist
+- **重要: 過去の仕様ファイルをアーカイブします**
+  ```bash
+  # .tmp/requirements.md が存在する場合、前回のセッションの成果物と判断してアーカイブ
+  if [ -f ".tmp/requirements.md" ]; then
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    ARCHIVE_DIR=".tmp/archive/spec_${TIMESTAMP}"
+    echo "Archiving previous session artifacts to ${ARCHIVE_DIR}..."
+    mkdir -p "${ARCHIVE_DIR}"
+    mv .tmp/* "${ARCHIVE_DIR}/"
+  fi
+  # .tmp ディレクトリをクリーンな状態で再作成
+  mkdir -p .tmp
+  ```
 
 ### 2. Analyze the user's request
 Carefully analyze the provided task description and extract:

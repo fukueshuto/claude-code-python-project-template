@@ -1,16 +1,21 @@
 {
 	"name": "python-devcontainer",
 	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+	// "remoteUser": "devuser",
+	"updateRemoteUserUID": true,
 	"containerEnv": {
 		"DISPLAY": "${localEnv:DISPLAY}",
 		"PYTHONUNBUFFERED": "1",
 		"PYTHONDONTWRITEBYTECODE": "1",
-		"UV_CACHE_DIR": "${containerWorkspaceFolder}/.cache/uv",
-		"UV_LINK_MODE": "copy",
-		"UV_PROJECT_ENVIRONMENT": "/home/vscode/.venv",
-		"UV_COMPILE_BYTECODE": "1"
+		"WORKSPACE_DIR": "${containerWorkspaceFolder}",
+		"UV_CACHE_DIR": "${containerWorkspaceFolder}/.cache/uv"
+		// "UV_CACHE_DIR": "${containerWorkspaceFolder}/.cache/uv",
+		// "UV_LINK_MODE": "copy",
+		// "UV_PROJECT_ENVIRONMENT": "/home/vscode/.venv",
+		// "UV_COMPILE_BYTECODE": "1"
 		// "UV_COMPILE_BYTECODE": "1",
 		// "NVIDIA_DRIVER_CAPABILITIES": "all"
+		// "NPM_CONFIG_PREFIX": "/home/vscode/.npm-global"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
@@ -18,7 +23,7 @@
 			"configureZshAsDefaultShell": true
 		},
 		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-			"packages": "curl,wget,git,jq,ca-certificates,build-essential,ripgrep"
+			"packages": "curl,wget,git,jq,ca-certificates,build-essential,ripgrep,tmux,vim,iptables,ipset"
 		},
 		"ghcr.io/va-h/devcontainers-features/uv:1": {
 			"shellAutocompletion": true
@@ -28,8 +33,10 @@
 	},
 	"runArgs": [
 		"--init",
-		"--rm"
-		// "--rm",
+		// "--rm"
+		"--rm",
+		"--cap-add=NET_ADMIN",
+		"--cap-add=NET_RAW"
 		// "--gpus",
 		// "all",
 		// "--runtime=nvidia"
@@ -40,7 +47,8 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"python.defaultInterpreterPath": "/home/vscode/.venv/bin/python"
+				"python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python"
+				// "python.defaultInterpreterPath": "/home/vscode/.venv/bin/python"
 			},
 			"extensions": [
 				"ms-python.python",
@@ -64,5 +72,6 @@
 		// "source=/usr/lib/x86_64-linux-gnu,target=/host/lib,type=bind,readonly"
 	],
 	"postCreateCommand": "bash .devcontainer/init.sh",
-	"postStartCommand": "uv run pre-commit install"
+	"postStartCommand": "bash .devcontainer/post-start.sh"
+	// "postStartCommand": "uv run pre-commit install"
 }

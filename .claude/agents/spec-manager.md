@@ -31,7 +31,7 @@ tools: Read, Write, MultiEdit, LS, Grep
 ls -la docs/specs/
 ls -la .tmp/
 
-# 作業計画の確認  
+# 作業計画の確認
 ls -la docs/plans/
 ls -la docs/plans/tasks/
 ```
@@ -82,7 +82,7 @@ ls -la docs/plans/tasks/
 - コンテキスト枯渇の可能性（大規模タスク）
 - 依存関係の複雑化
 
-### 中リスク  
+### 中リスク
 - テストカバレッジの低下傾向
 - ドキュメントの更新遅れ
 

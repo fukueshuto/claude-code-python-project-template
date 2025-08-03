@@ -23,15 +23,14 @@ Execute `/design` command to create technical design based on requirements.
 
 **Present design to user for approval before proceeding**
 
-### 4. Stage 3: Task List
-Execute `/tasks` command to break down design into implementable tasks.
+### 3. Stage 3: Plan
+Execute `/plan` command to break down the design into a implementable task plan.
 
 **Present task list to user for approval before proceeding**
 
 ### 5. Report completion
 Summarize what was created and inform user that they can now:
 - Proceed with manual implementation
-- Use `/implement` to start autonomous execution with Sub agents
 - Use individual Sub agents for specific tasks
 
 ## Important Notes
