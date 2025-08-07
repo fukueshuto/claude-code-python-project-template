@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Bash
-description: (新規) 新しく実装作業を行う前に，.dev_docs 内の.dev_docs/archive/*以外のファイルを.dev_docs/archive/<requirement-name>/ に移動します。<requirement-name>がかぶる場合は両フォルダ名を被らないように修正します．
+description: 新しく実装作業を行う前に，.dev_docs 内の.dev_docs/archive/*以外のファイルを.dev_docs/archive/<requirement-name>/ に移動します。<requirement-name>がかぶる場合は両フォルダ名を被らないように修正します．
 ---
 
 ## Your task

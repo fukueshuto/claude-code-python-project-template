@@ -1,6 +1,6 @@
 ---
 name: sync-todos
-description: (新規) 次に実行すべき未完了タスクを1つだけ特定し、その実行計画を詳細なチェックリストとしてTODOリストに同期します。各タスクの開始前に実行してください。
+description: 次に実行すべき未完了タスクを1つだけ特定し、その実行計画を詳細なチェックリストとしてTODOリストに同期します。各タスクの開始前に実行してください。
 allowed-tools: TodoRead, TodoWrite, Read, LS, Bash
 ---
 

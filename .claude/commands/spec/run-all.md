@@ -14,17 +14,17 @@ Execute the complete Specification-Driven Development workflow:
 - Create a new feature branch based on the task
 
 ### 2. Stage 1: Requirements
-Execute `/requirements` command to create detailed requirements specification.
+Execute `/spec:requirements` command to create detailed requirements specification.
 
 **Present requirements to user for approval before proceeding**
 
 ### 3. Stage 2: Design
-Execute `/design` command to create technical design based on requirements.
+Execute `/spec:design` command to create technical design based on requirements.
 
 **Present design to user for approval before proceeding**
 
 ### 3. Stage 3: Plan
-Execute `/plan` command to break down the design into a implementable task plan.
+Execute `/spec:plan` command to break down the design into a implementable task plan.
 
 **Present task list to user for approval before proceeding**
 

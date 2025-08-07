@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Bash
-description: (新規) 新しく仕様策定を行う前に.tmp 内の.tmp/archive/*以外のファイルを .tmp/archive/<requirement-name>に退避させ、作業場をクリーンにします。<requirement-name>がかぶる場合は両フォルダ名を被らないように修正します．
+description: 新しく仕様策定を行う前に.tmp 内の.tmp/archive/*以外のファイルを .tmp/archive/<requirement-name>に退避させ、作業場をクリーンにします。<requirement-name>がかぶる場合は両フォルダ名を被らないように修正します．
 ---
 
 ## Your task
