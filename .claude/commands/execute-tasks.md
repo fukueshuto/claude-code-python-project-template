@@ -1,62 +1,40 @@
 ---
-allowed-tools: TodoWrite, TodoRead, Read, Write, MultiEdit, Bash
-description: Start autonomous implementation using Sub agents
+allowed-tools: TodoRead, TodoWrite, Read, Write, MultiEdit, Bash
+description: (修正) 実装からコミットまでの一連のプロセスを自律的に実行し，すべてのタスクを完了させます。
 ---
 
+## あなたの役割
+あなたは、ユーザーの指示に基づき、ループしてすべてのタスクを完了まで導く「**タスク実行オーケストレーター**」です。あなたの仕事は、1回のコマンド実行で、各タスクを実装・品質チェック・コミットまで完了させ，すべてのタスクが終了するまでループすることです。
+
 ## Context
-- Requirements: @.dev_docs/specs/requirements.md
-- Design: @.dev_docs/specs/design.md
+- Requirements: `.dev_docs/specs/requirements.md`
+- Design: `.dev_docs/specs/design.md`
+- Detailed Tasks: `.dev_docs/tasks/`
 
-## Your task
+## ワークフロー
+未完了の各タスクに対して、ループを順次実行します．
+以下の手順で実行します。これは**最後のタスクが完了するまで繰り返されます**。
 
-### 1. Verify prerequisites
-- Check if the TODO list is synchronized with the task files. If not, advise the user to run `/sync-todos` first.
-- Confirm with the user before starting the execution loop.
+### 1. 次のタスク計画の準備 (by `sync-todos`)
+- 最初に、`sync-todos`を呼び出し、次に実行すべきタスクを1つだけ特定し、その実行計画をTODOリストにセットします。
+- もし`sync-todos`が「実行すべきタスクがない」と報告した場合、ユーザーに「全てのタスクが完了しました。」と報告して、あなたのタスクは終了です。
 
-### 3. Explain execution loop
-Inform user about the autonomous execution process:
+### 2. タスクの実行と品質保証ループ
+- TODOリストにセットされた計画に基づき、以下のSub-agentを順次呼び出します。
+- **ステップA: 実装 (by `task-executor`)**
+  - `task-executor`を呼び出し、タスクファイルに基づいてコードを実装させます。
 
-```markdown
-## 自律実行プロセス
+- **ステップB: 品質保証ループ (by `quality-checker` & `code-improver`)**
+  - ここは**品質が基準を満たすまで続く内部ループ**です。
+  - **B-1. 検証**: `quality-checker`を呼び出し、コードをチェックします。
+  - **B-2. 評価**: 品質に問題がなければループを抜けます。問題が指摘された場合は、`code-improver`を呼び出して修正させ、**B-1に戻って再検証**します。
 
-各タスクに対して以下のループを実行します：
+### 3. コミットループ
+- **ステップC: コミットループ (by `commit-agent`)**
+  - ここは**コミットが成功するまで続く内部ループ**です。
+  - **C-1. 実行**: `commit-agent`を呼び出し、完成したコードのコミットを指示します。
+  - **C-2. 評価**: `commit-agent`から成功報告があればループを抜けます。失敗した場合は、原因を`code-improver`や`task-executor`で分析・修正し、**C-1に戻って再コミット**します。
 
-1. **task-executor** でタスクを実行
-   - 仕様書に基づいた実装
-   - 進捗のリアルタイム更新
-
-2. **quality-checker** で品質確認
-   - コード品質の自動チェック
-   - 問題の即座修正
-
-3. **進捗確認とコミット**
-   - タスク完了の確認
-   - すべてのファイルをコミット
-   - 次タスクへの移行
-
-必要に応じて **spec-manager** で全体の整合性を確認できます。
-```
-
-### 4. Start first task execution
-Begin with the first task:
-
-```
-では最初のタスクから開始します：
-- task-executor でタスク01を実行
-- 完了後、quality-checker で品質チェック
-```
-
-### 5. Monitor and assist
-- Watch for context overflow signs
-- Provide guidance when Sub agents need help
-- Ensure quality standards are maintained
-- Use spec-manager for coherence checks
-
-## Important Notes
-- Let Sub agents work autonomously
-- Intervene only when necessary
-- Maintain specification alignment
-- Each task should result in a working commit
-- Update progress documentation continuously
-
-think hard
+### 4. 完了報告と次のステップの案内
+- 現在のタスクの全工程が完了したら、TODOリストの項目を全てクリアします。
+- **ステップ1に戻り、`/sync-todos`を再度呼び出して次のタスク計画を立て、ループを継続します。**

@@ -42,7 +42,7 @@ cat.dev_.dev_docs/tasks/[selected-task].md
 ```
 
 ### 2. コンテキスト構築
-- **全体設計書を必ず確認**（_overview-*.md）
+- **全体設計書を必ず確認**（overview.md）
 - 仕様書の該当部分を確認
 - 前タスクの成果物を確認
 - 影響範囲を特定
