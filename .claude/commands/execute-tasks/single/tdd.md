@@ -18,11 +18,12 @@ allowed-tools: TodoRead, TodoWrite, Read, Bash, Task
 - `sync-todos`を呼び出し、次に実行すべきタスクを1つだけ特定し、その実行計画をTODOリストにセットします。
 - もし`sync-todos`が「実行すべきタスクがない」と報告した場合、ユーザーに報告してあなたのタスクは終了です。
 
-### 2. TDD実装プロセスの実行 (by `tdd-task-executor`)
-- TODOリストに基づき、マネージャー役の`tdd-task-executor`を呼び出します。
-- `tdd-task-executor`は、以下の内部プロセスを自律的に実行します。
+### 2. TDD実装プロセスの実行
   1. `tdd-test-writer`を呼び出し、失敗するテストを作成
   2. `commit-agent`を呼び出し、**テストコードを先行してコミット**
+      - ここは**コミットが成功するまで続く内部ループ**です。
+      - **2-1. 実行**: `commit-agent`を呼び出し、完成したテストのコミットを指示します。
+      - **2-2. 評価**: `commit-agent`から成功報告があればループを抜けます。失敗した場合は、原因を`code-improver`もしくは自ら分析・修正し、**2-1に戻って再コミット**します。
   3. `tdd-code-implementer`を呼び出し、テストをパスする機能コードを実装
 
 ### 3. 品質保証ループ (by `quality-checker` & `code-improver`)
@@ -33,10 +34,10 @@ allowed-tools: TodoRead, TodoWrite, Read, Bash, Task
   - 問題が指摘された場合は、`code-improver`を呼び出して修正させ、**A-1に戻って再検証**します。このループは、品質基準を満たすまで続きます。
 
 ### 3. コミットループ
-- **ステップC: コミットループ (by `commit-agent`)**
+- **ステップB: コミットループ (by `commit-agent`)**
   - ここは**コミットが成功するまで続く内部ループ**です。
-  - **C-1. 実行**: `commit-agent`を呼び出し、完成したコードのコミットを指示します。
-  - **C-2. 評価**: `commit-agent`から成功報告があればループを抜けます。失敗した場合は、原因を`code-improver`や`task-executor`で分析・修正し、**C-1に戻って再コミット**します。
+  - **B-1. 実行**: `commit-agent`を呼び出し、完成したコードのコミットを指示します。
+  - **B-2. 評価**: `commit-agent`から成功報告があればループを抜けます。失敗した場合は、原因を`code-improver`や`task-executor`で分析・修正し、**B-1に戻って再コミット**します。
 
 ### 5. 完了報告と終了
 - 現在のタスクの全工程が完了したら、TODOリストの項目を全てクリアします。

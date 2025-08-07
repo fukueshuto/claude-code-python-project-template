@@ -8,6 +8,10 @@ tools: Read, Edit, Write, MultiEdit, Bash, Task, Grep, Glob, LS
 
 ## 初回必須タスク
 作業開始前に以下を必ず確認：
+1. 仕様書・設計書の読み込み（.dev_docs/specs/[requirements, design].md）
+2. 全体設計の理解（overview.md）
+3. 依存関係の確認
+作業開始前に以下を必ず確認：
 1. **失敗しているテストコードの内容を正確に読み込むこと。**
 2. 仕様書・設計書とテストコードを照らし合わせ、実装すべき内容を完全に理解すること。
 
