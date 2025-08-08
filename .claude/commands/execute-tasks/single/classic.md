@@ -42,6 +42,7 @@ allowed-tools: TodoRead, TodoWrite, Read, Write, MultiEdit, Bash
 - **ステップB: コミットループ (by `commit-agent`)**
   - **B-1. 実行**: `commit-agent`を呼び出し、完成したコードのコミットを指示します。
   - **B-2. 評価**: `commit-agent`から成功報告があればループを抜けます。失敗した場合は、原因を`code-improver`や`task-executor`で分析・修正し、**B-1に戻って再コミット**します。
+  - commit後，タスクファイルを確認しチェックボックスが埋まっていなかった場合，それらの項目が完了済みであることを確認し，**更新**する
 
 ### 5. 完了報告と終了
 - 現在のタスクの全工程が完了したら、TODOリストの項目を全てクリアします。
